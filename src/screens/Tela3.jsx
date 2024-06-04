@@ -1,42 +1,46 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React, { useContext } from 'react'
-import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../../context/AutenticationContext';
-import { Button } from '@rneui/themed';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { QuestionContext } from '../context/QuestionContext';
+import { Button } from '@rneui/base';
 
+export default function Resultado() {
 
-export default function Tela3() {
+  const { q1, q2, q3, q4, q5, q6, q7, q8, q9, q10 } = useContext(QuestionContext);
+  const [resultado, setResultado] = useState("");
+  const [resp, setResp] = useState(-1);
 
-  const nav = useNavigation();
-  const { pontuacao, setPontuacao } = useContext(AuthContext);
-
-  const getFeedbackMessage = () => {
-    const total = pontuacao.total;
+  function contarQuestoes() {
+    let total = q1 + q2 + q3 + q4 + q5 + q6 + q7 + q8 + q9 + q10;
+    setResp(total);
     if (total >= 0 && total <= 10) {
-      return `
-Reflita seus hábitos alimentares, e lembre-se sempre que uma alimentação desregulada pode levar à obesidade, diabetes, hipertensão, problemas no coração, desnutrição, entre outros. Reveja sua dieta alimentar e tente melhorar, seu corpo e sua saúde agradecem.`;
+      setResultado(`Reflita seus hábitos alimentares, e lembre-se sempre que uma alimentação desregulada pode levar à obesidade, diabetes, hipertensão, problemas no coração, desnutrição, entre outros. Reveja sua dieta alimentar e tente melhorar, seu corpo e sua saúde agradecem.
+      `);
     } else if (total >= 11 && total <= 20) {
-      return `
-Sua alimentação está boa, mas ainda não é a ideal. Analise seus hábitos alimentares e verifique o que pode mudar.`;
+      setResultado(`Sua alimentação está boa, mas ainda não é a ideal. Analise seus hábitos alimentares e verifique o que pode mudar.
+      `);
     } else if (total >= 21 && total <= 30) {
-      return `Parabéns, você mostrou que sabe cuidar de sua saúde fazendo escolhas inteligentes e equilibradas.`;
+      setResultado(`Parabéns, você mostrou que sabe cuidar de sua saúde fazendo escolhas inteligentes e equilibradas.
+      `);
     } else {
-      return 'Pontuação fora do intervalo esperado.';
+      setResultado('Pontuação fora do intervalo esperado.');
     }
-  };
+  }
+
+  useEffect(() => {
+    contarQuestoes();
+  }, []);
 
   return (
-    <View style={styles.container}>
-
-      <Text style={styles.pontuacao}>Sua pontuação total é: {pontuacao.total}</Text>
-      <Text style={styles.feedback}>{getFeedbackMessage()}</Text>
+    <View>
+      <Text style={styles.feedback}>Resultado: {resp}</Text>
+      <Text style={styles.feedback}>{resultado}</Text>
       <Button
         buttonStyle={styles.button}
         title='Voltar'
         onPress={() => nav.navigate("TelaInicio")}
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

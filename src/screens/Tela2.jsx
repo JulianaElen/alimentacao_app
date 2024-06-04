@@ -1,182 +1,357 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, SectionList, Alert, TouchableOpacity } from 'react-native';
-import { Button } from '@rneui/themed';
+import {View, Text, ScrollView, Alert, StyleSheet} from 'react-native';
+import React, {useContext} from 'react';
+import {CheckBox} from '@rneui/themed';
+import {Button} from '@rneui/base';
+import {QuestionContext} from '../context/QuestionContext';
 
-import { AuthContext } from '../../context/AutenticationContext';
-import { useNavigation } from '@react-navigation/native';
+export default function Questoes({navigation}) {
+  const {
+    q1,
+    setQ1,
+    q2,
+    setQ2,
+    q3,
+    setQ3,
+    q4,
+    setQ4,
+    q5,
+    setQ5,
+    q6,
+    setQ6,
+    q7,
+    setQ7,
+    q8,
+    setQ8,
+    q9,
+    setQ9,
+    q10,
+    setQ10,
+  } = useContext(QuestionContext);
 
-const DATA = [
-    {
-        title: 'Questão 1: Quantos copos de água você bebe por dia?',
-        data: [
-            { ponto: 0, opcao: 'a) Não bebo muita água;' },
-            { ponto: 1, opcao: 'b) Menos de quatro copos;' },
-            { ponto: 3, opcao: 'c) Mais de cinco copos.' },
-        ],
-    },
-    {
-        title: 'Questão 2: Quantas vezes por dia você come? (conte também os lanches da manhã e da tarde)',
-        data: [
-            { ponto: 0, opcao: 'a) Uma ou duas vezes por dia;' },
-            { ponto: 1, opcao: 'b) De três a quatro vezes por dia;' },
-            { ponto: 3, opcao: 'c) Mais de cinco vezes por dia.' },
-        ],
-    },
-    {
-        title: 'Questão 3: Como costuma ser seu café da manhã?',
-        data: [
-            { ponto: 0, opcao: 'a) Café preto e no máximo um biscoitinho;' },
-            { ponto: 2, opcao: 'b) Café com leite, pão branco, margarina, queijo e presunto;' },
-            { ponto: 3, opcao: 'c) Frutas e sucos naturais, cereais integrais, tapioca, pão integral.' },
-        ],
-    },
-    {
-        title: 'Questão 4: Qual é, em média, a quantidade de frutas que você consome por dia?',
-        data: [
-            { ponto: 0, opcao: 'a) Não como frutas nem bebo suco natural de frutas todos os dias;' },
-            { ponto: 3, opcao: 'b) Três unidades;' },
-            { ponto: 1, opcao: 'c) Duas ou menos unidades.' },
-        ],
-    },
-    {
-        title: 'Questão 5: O que você leva de lanche para a escola/trabalho?',
-        data: [
-            { ponto: 0, opcao: 'a) Não levo nenhum tipo de lanche;' },
-            { ponto: 1, opcao: 'b) Chocolates, pães, bolachas recheadas, salgadinhos, refrigerante;' },
-            { ponto: 3, opcao: 'c) Frutas, iogurte, barrinha de cereal, sanduíche de pão integral.' },
-        ],
-    },
-    {
-        title: 'Questão 6: Você consome algum tipo de verdura ou legume todos os dias:',
-        data: [
-            { ponto: 0, opcao: 'a) Não consumo verdura nem legumes;' },
-            { ponto: 2, opcao: 'b) Duas ou menos vezes por semana;' },
-            { ponto: 3, opcao: 'c) Todos os dias.' },
-        ],
-    },
-    {
-        title: 'Questão 7: Quantas vezes por semana você come carne vermelha?',
-        data: [
-            { ponto: 1, opcao: 'a) Todos os dias;' },
-            { ponto: 0, opcao: 'b) Não consumo carne vermelha;' },
-            { ponto: 3, opcao: 'c) Duas vezes ou mais.' },
-        ],
-    },
-    {
-        title: 'Questão 8: Quantas vezes por semana você pratica atividades físicas?',
-        data: [
-            { ponto: 3, opcao: 'a) Todos os dias;' },
-            { ponto: 2, opcao: 'b) Duas vezes ou mais;' },
-            { ponto: 0, opcao: 'c) Não pratico nenhuma atividade física.' },
-        ],
-    },
-    {
-        title: 'Questão 9: Qual tipo de gordura é mais utilizado na sua casa para cozinhar os alimentos?',
-        data: [
-            { ponto: 0, opcao: 'a) Gordura animal ou manteiga;' },
-            { ponto: 3, opcao: 'b) Óleos vegetais (óleo de soja, girassol, algodão, canola);' },
-            { ponto: 1, opcao: 'c) Margarina ou gordura vegetal.' },
-        ],
-    },
-    {
-        title: 'Questão 10: Você costuma tomar refrigerantes com qual frequência?',
-        data: [
-            { ponto: 3, opcao: 'a) Não tomo refrigerantes;' },
-            { ponto: 1, opcao: 'b) Três ou menos vezes por semana;' },
-            { ponto: 0, opcao: 'c) Todos os dias.' },
-        ],
-    },
-];
+  function validarQuestoes() {
+    let ok = true;
+    if (
+      q1 < 0 ||
+      q2 < 0 ||
+      q3 < 0 ||
+      q4 < 0 ||
+      q5 < 0 ||
+      q6 < 0 ||
+      q7 < 0 ||
+      q8 < 0 ||
+      q9 < 0 ||
+      q10 < 0
+    ) {
+      Alert.alert('É necessário responder a todas as questões!!!');
+      ok = false;
+    }
 
-export default function Tela2() {
+    if (ok) {
+      navigation.navigate('TelaResultado');
+    }
+  }
 
-    const nav = useNavigation();
-    const { pontuacao, setPontuacao } = useContext(AuthContext);
-
-    const [respostas, setRespostas] = useState(Array(DATA.length).fill(null));
-    const handlePress = (sectionIndex, item) => {
-        const novasRespostas = [...respostas];
-        novasRespostas[sectionIndex] = item.ponto;
-        setRespostas(novasRespostas);
-    };
-
-    const calcularPontuacaoTotal = () => {
-        return respostas.reduce((total, ponto) => total + (ponto || 0), 0);
-    };
-
-    return (
-        <View style={styles.container}>
-            <SectionList
-                sections={DATA}
-                keyExtractor={(item, index) => item.opcao + index}
-                renderItem={({ item, section, index }) => (
-                    <View
-                        style={[
-                            styles.item,
-                            respostas[DATA.indexOf(section)] === item.ponto ? styles.itemSelecionado : null,
-                        ]}
-                    >
-                        <Text
-                            style={styles.title}
-                            onPress={() => handlePress(DATA.indexOf(section), item)}
-                        >
-                            {item.opcao}
-                        </Text>
-                    </View>
-                )}
-                renderSectionHeader={({ section: { title } }) => (
-                    <Text style={styles.header}>{title}</Text>
-                )}
-            />
-            <Button
-                buttonStyle={styles.button}
-                title='Finalizar'
-                onPress={() => {
-                    if (respostas.includes(null)) {
-                        Alert.alert('Erro', 'Por favor, selecione todas as opções.');
-                        return;
-                    }
-                    setPontuacao({ total: calcularPontuacaoTotal() });
-                    nav.navigate('TelaResultado');
-                }}
-            />
+  return (
+    <ScrollView>
+      <View>
+        <Text>Questão1 - Quantos copos de água você bebe por dia?</Text>
+        <View row align="center" spacing={4}>
+          <CheckBox
+            title="Não bebo muita água"
+            checked={q1 === 0}
+            onPress={() => setQ1(0)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Menos de quatro copos"
+            checked={q1 === 1}
+            onPress={() => setQ1(1)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Mais de cinco copos"
+            checked={q1 === 3}
+            onPress={() => setQ1(3)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
         </View>
-    );
+      </View>
+      <View>
+        <Text>Questão2 - Quantas vezes por dia você come? </Text>
+        <View row align="center" spacing={4}>
+          <CheckBox
+            title="Uma ou duas vezes por dia"
+            checked={q2 === 0}
+            onPress={() => setQ2(0)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="De três a quatro vezes por dia"
+            checked={q2 === 1}
+            onPress={() => setQ2(1)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Mais de cinco vezes por dia"
+            checked={q2 === 3}
+            onPress={() => setQ2(3)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+        </View>
+      </View>
+      <View>
+        <Text>Questão3 - Como costuma ser seu café da manhã?</Text>
+        <View row align="center" spacing={4}>
+          <CheckBox
+            title="Café preto e no máximo um biscoitinho"
+            checked={q3 === 0}
+            onPress={() => setQ3(0)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Café com leite, pão branco, margarina, queijo e presunto"
+            checked={q3 === 2}
+            onPress={() => setQ3(2)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Frutas e sucos naturais, cereais integrais, tapioca, pão integral"
+            checked={q3 === 3}
+            onPress={() => setQ3(3)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+        </View>
+      </View>
+      <View>
+        <Text>
+          Questão4 - Qual é, em média, a quantidade de frutas que você consome
+          por dia?
+        </Text>
+        <View row align="center" spacing={4}>
+          <CheckBox
+            title="Não como frutas nem bebo suco natural de frutas todos os dias"
+            checked={q4 === 0}
+            onPress={() => setQ4(0)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Três unidades"
+            checked={q4 === 3}
+            onPress={() => setQ4(3)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Duas ou menos unidades"
+            checked={q4 === 1}
+            onPress={() => setQ4(1)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+        </View>
+      </View>
+      <View>
+        <Text>
+          Questão5 - O que você leva de lanche para a escola/trabalho?
+        </Text>
+        <View row align="center" spacing={4}>
+          <CheckBox
+            title="Não levo nenhum tipo de lanche"
+            checked={q5 === 0}
+            onPress={() => setQ5(0)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Chocolates, pães, bolachas recheadas, salgadinhos, refrigerante"
+            checked={q5 === 1}
+            onPress={() => setQ5(1)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+          <CheckBox
+            title="Frutas, iogurte, barrinha de cereal, sanduíche de pão integral"
+            checked={q5 === 3}
+            onPress={() => setQ5(3)}
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+          />
+        </View>
+        <View>
+          <Text>
+            {
+              'Questão 6: Você consome algum tipo de verdura ou legume todos os dias:'
+            }
+          </Text>
+          <View row align="center" spacing={4}>
+            <CheckBox
+              title="Não consumo verdura nem legumes"
+              checked={q6 === 0}
+              onPress={() => setQ6(0)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Duas ou menos vezes por semana"
+              checked={q6 === 2}
+              onPress={() => setQ6(2)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Todos os dias"
+              checked={q6 === 3}
+              onPress={() => setQ6(3)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+          </View>
+        </View>
+        <View>
+          <Text>
+            {'Questão 7: Quantas vezes por semana você come carne vermelha?'}
+          </Text>
+          <View row align="center" spacing={4}>
+            <CheckBox
+              title="Todos os dias"
+              checked={q7 === 3}
+              onPress={() => setQ7(3)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Não consumo carne vermelha"
+              checked={q7 === 0}
+              onPress={() => setQ7(0)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Duas vezes ou mais"
+              checked={q7 === 2}
+              onPress={() => setQ7(2)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+          </View>
+        </View>
+        <View>
+          <Text>
+            {
+              'Questão 8: Quantas vezes por semana você pratica atividades físicas?'
+            }
+          </Text>
+          <View row align="center" spacing={4}>
+            <CheckBox
+              title="Todos os dias"
+              checked={q8 === 3}
+              onPress={() => setQ8(3)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Duas vezes ou mais"
+              checked={q8 === 2}
+              onPress={() => setQ8(2)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Não pratico nenhuma atividade física"
+              checked={q8 === 0}
+              onPress={() => setQ8(0)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+          </View>
+        </View>
+        <View>
+          <Text>
+            {
+              'Questão 9: Qual tipo de gordura é mais utilizado na sua casa para cozinhar os alimentos?'
+            }
+          </Text>
+          <View row align="center" spacing={4}>
+            <CheckBox
+              title="Gordura animal ou manteiga"
+              checked={q9 === 0}
+              onPress={() => setQ9(0)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Óleos vegetais (óleo de soja, girassol, algodão, canola)"
+              checked={q9 === 3}
+              onPress={() => setQ9(3)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Margarina ou gordura vegetal"
+              checked={q9 === 1}
+              onPress={() => setQ9(1)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+          </View>
+        </View>
+        <View>
+          <Text>
+            {
+              'Questão 10: Você costuma tomar refrigerantes com qual frequência?'
+            }
+          </Text>
+          <View row align="center" spacing={4}>
+            <CheckBox
+              title="Não tomo refrigerantes"
+              checked={q10 === 3}
+              onPress={() => setQ10(3)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Três ou menos vezes por semana"
+              checked={q10 === 1}
+              onPress={() => setQ10(1)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+            <CheckBox
+              title="Todos os dias"
+              checked={q10 === 0}
+              onPress={() => setQ10(0)}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+            />
+          </View>
+          <Button
+            buttonStyle={styles.button}
+            title="Finalizar pesquisa"
+            onPress={() => validarQuestoes()}
+          />
+        </View>
+      </View>
+    </ScrollView>
+  );
 }
 
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
-    header: {
-        fontSize: 22,
-        backgroundColor: '#f0f0f0',
-        padding: 10,
-        fontWeight: 'bold',
-    },
-    item: {
-        marginVertical: 8,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
-        padding: 20,
-        borderStyle: 'solid',
-        backgroundColor: '#f0d58f',
-
-    },
-    itemSelecionado: {
-        backgroundColor: '#c9a216',
-        fontWeight: 'bold',
-    },
-    title: {
-        fontSize: 18,
-    },
-    button: {
-        marginTop: 10,
-        backgroundColor: '#c02f1e',
-        borderRadius: 25,
-        marginRight: 30,
-        marginLeft: 30,
-    },
+  button: {
+    marginTop: 10,
+    marginBottom: 15,
+    backgroundColor: '#c02f1e',
+    borderRadius: 25,
+    marginRight: 30,
+    marginLeft: 30,
+  },
 });

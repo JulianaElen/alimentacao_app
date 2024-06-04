@@ -1,6 +1,6 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { AuthProvider } from './context/AutenticationContext';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -9,11 +9,12 @@ import Tela2 from './src/screens/Tela2';
 import Tela3 from './src/screens/Tela3';
 
 import { NavigationContainer } from '@react-navigation/native';
+import QuestionProvider from './src/context/QuestionContext';
 
 export default function App() {
   return (
     <NavigationContainer>
-      <AuthProvider>
+      <QuestionProvider>
         <Stack.Navigator>
           <Stack.Screen
             name='TelaInicio'
@@ -35,7 +36,7 @@ export default function App() {
             }}
           />
         </Stack.Navigator>
-      </AuthProvider>
+      </QuestionProvider>
     </NavigationContainer>
   )
 }
